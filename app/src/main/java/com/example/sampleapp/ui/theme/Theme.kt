@@ -1,53 +1,31 @@
 package com.example.sampleapp.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.R
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-
-private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200
-)
-
-private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
-)
 
 enum class ColorPalette(
     val basic: Color,
-    val background: Color,
     val highlight: Color,
-    val dark: Color,
-    val materialColors: Colors = lightColors()
+    val dark: Color
 ) {
     LOID(
-
+        LoidColors.basic,
+        LoidColors.highlight,
+        LoidColors.dark
     ),
     YOR(
-
+        YorColors.basic,
+        YorColors.highlight,
+        YorColors.dark
     ),
     ANYA(
-
+        AnyaColors.basic,
+        AnyaColors.highlight,
+        AnyaColors.dark
     );
 
     companion object {
@@ -63,27 +41,38 @@ enum class ColorPalette(
     }
 }
 
+internal val LocalColorPalette = staticCompositionLocalOf { ColorPalette.LOID }
+
+object SampleAppTheme {
+    val current: ColorPalette
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalColorPalette.current
+}
 
 @Composable
-fun SampleAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun SampleAppTheme(
+    colorPalette: ColorPalette,
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
 
     val sysUiController = rememberSystemUiController()
-    LaunchedEffect(Unit) {
-        sysUiController.setStatusBarColor(
-            color = Color.Gray
+    LaunchedEffect(darkTheme) {
+        val color = if (darkTheme) {
+            BaseColors.dark
+        } else {
+            BaseColors.light
+        }
+        sysUiController.setSystemBarsColor(color)
+    }
+
+    CompositionLocalProvider(LocalColorPalette provides colorPalette) {
+        MaterialTheme(
+            colors = lightColors(),
+            typography = Typography,
+            shapes = Shapes,
+            content = content
         )
     }
-
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
-
-    MaterialTheme(
-        colors = colors,
-        typography = Typography,
-        shapes = Shapes,
-        content = content
-    )
 }
