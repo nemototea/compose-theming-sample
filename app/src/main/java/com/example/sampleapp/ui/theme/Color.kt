@@ -2,23 +2,19 @@ package com.example.sampleapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-object BaseColors {
-    val light = Color(0xFFA5A29A)
-    val dark = Color(0xFF1D1D1D)
-}
 object LoidColors {
-    val basic = Color(0xFF323A1E)
+    val basic = Color(0xFF817244)
     val highlight = Color(0xFFE9CC78)
-    val dark = Color(0xFF817244)
+    val dark = Color(0xFF323A1E)
 }
 object YorColors {
-    val basic = Color(0xFF200000)
-    val highlight = Color(0xFF830000)
-    val dark = Color(0xFF440000)
+    val basic = Color(0xFF440000)
+    val highlight = Color(0xFFD63C3C)
+    val dark = Color(0xFF200000)
 }
 object AnyaColors {
-    val basic = Color(0xFF331713)
-    val highlight = Color(0xFFF3A095)
-    val dark = Color(0xFFA5C974)
+    val basic = Color(0xFFDD9389)
+    val highlight = Color(0xFFC5EE8E)
+    val dark = Color(0xFF331713)
 }
 

@@ -13,10 +13,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.sampleapp.ui.theme.ColorPalette
+import com.example.sampleapp.ui.theme.ColorPalette.Companion.toName
+import com.example.sampleapp.ui.theme.ColorPalette.Companion.toPainter
 import com.example.sampleapp.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,30 +31,36 @@ class MainActivity : ComponentActivity() {
             var showThemeDialog by remember {
                 mutableStateOf(false)
             }
+            var themeColor by remember {
+                mutableStateOf(ColorPalette.LOID)
+            }
 
-            SampleAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = SampleAppTheme.current.dark) {
+            SampleAppTheme(themeColor) {
+                Surface(modifier = Modifier.fillMaxSize(), color = SampleAppTheme.current.basic) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-
-                        Image(painter = painterResource(id = R.drawable.anyadark), contentDescription = "")
-
-                        Button(
-                            onClick = { showThemeDialog = true },
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = SampleAppTheme.current.basic,
-                                contentColor = Color.White
-                            ),
-                            content = { Text("Theme Colors") }
+                        Text(
+                            text = "SPY×FAMILY",
+                            fontFamily = FontFamily.Serif,
+                            fontSize = 48.sp,
+                            modifier = Modifier.padding(bottom = 24.dp),
+                            color = SampleAppTheme.current.highlight
+                        )
+                        Image(painter = SampleAppTheme.current.toPainter(), contentDescription = "")
+                        Text(
+                            text = SampleAppTheme.current.toName(),
+                            modifier = Modifier.padding(vertical = 16.dp),
+                            textDecoration = TextDecoration.Underline,
+                            fontFamily = FontFamily.Serif,
+                            color = SampleAppTheme.current.highlight
                         )
                         Button(
-                            modifier = Modifier.padding(top = 8.dp),
                             onClick = { showThemeDialog = true },
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = SampleAppTheme.current.basic,
+                                backgroundColor = SampleAppTheme.current.dark,
                                 contentColor = Color.White
                             ),
                             content = { Text("Theme Colors") }
@@ -58,13 +68,10 @@ class MainActivity : ComponentActivity() {
                     }
 
                     if (showThemeDialog) {
-                        ThemeDialog(
-                            onDismiss = { showThemeDialog = false },
-                            onChangeSkinTheme = {
-                                // TODO: テーマ切り替え処理
-                                showThemeDialog = false
-                            }
-                        )
+                        ThemeDialog {
+                            it?.let { themeColor = it }
+                            showThemeDialog = false
+                        }
                     }
                 }
             }
@@ -74,15 +81,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ThemeDialog(
-    onDismiss: (ColorPalette) -> Unit,
-    onChangeSkinTheme: () -> Unit
+    onDismiss: (ColorPalette?) -> Unit
 ) {
-    Dialog(onDismissRequest = onDismiss) {
-        SkinThemeDialogContent(
-            onChangeSkinTheme = {
-                onChangeSkinTheme(it)
-            }
-        )
+    Dialog(onDismissRequest = { onDismiss(null) }) {
+        SkinThemeDialogContent(onChangeSkinTheme = { onDismiss(it) })
     }
 }
 
@@ -95,21 +97,17 @@ private fun SkinThemeDialogContent(
         shape = RoundedCornerShape(4.dp)
     ) {
         Column {
-            Box(
+            Text(
+                text = "Theme",
                 modifier = Modifier
                     .height(64.dp)
-                    .padding(horizontal = 24.dp)
-            ) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                    ProvideTextStyle(MaterialTheme.typography.subtitle1) {
-                        Text(text = stringResource(id = R.string.theme), Modifier.paddingFromBaseline(40.dp))
-                    }
-                }
-            }
+                    .padding(horizontal = 8.dp)
+                    .paddingFromBaseline(40.dp)
+            )
             Column(Modifier.selectableGroup()) {
                 ColorPalette.values().forEach { theme ->
                     SkinThemeDialogRow(
-                        text = theme.toColorName(),
+                        text = theme.toName(),
                         selected = (theme == SampleAppTheme.current),
                         onClick = {
                             onChangeSkinTheme(theme)

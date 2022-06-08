@@ -5,6 +5,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import com.example.sampleapp.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 enum class ColorPalette(
@@ -38,6 +41,23 @@ enum class ColorPalette(
                 ANYA -> "Anya Forger(Subject 007)"
             }
         }
+
+        @Composable
+        fun ColorPalette.toPainter(): Painter {
+            return if (isSystemInDarkTheme()) {
+                when (this) {
+                    LOID -> painterResource(id = R.drawable.loiddark)
+                    YOR -> painterResource(id = R.drawable.yordark)
+                    ANYA -> painterResource(id = R.drawable.anyadark)
+                }
+            } else {
+                when (this) {
+                    LOID -> painterResource(id = R.drawable.loidlight)
+                    YOR -> painterResource(id = R.drawable.yorlight)
+                    ANYA -> painterResource(id = R.drawable.anyalight)
+                }
+            }
+        }
     }
 }
 
@@ -58,11 +78,11 @@ fun SampleAppTheme(
 ) {
 
     val sysUiController = rememberSystemUiController()
-    LaunchedEffect(darkTheme) {
+    LaunchedEffect(colorPalette, darkTheme) {
         val color = if (darkTheme) {
-            BaseColors.dark
+            colorPalette.dark
         } else {
-            BaseColors.light
+            colorPalette.highlight
         }
         sysUiController.setSystemBarsColor(color)
     }
